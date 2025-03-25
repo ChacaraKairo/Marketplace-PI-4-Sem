@@ -1,9 +1,9 @@
-CREATE TABLE tags (
+CREATE TABLE IF NOT EXISTS tags (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(50) UNIQUE NOT NULL
 );
 
-CREATE TABLE produto_tags (
+CREATE TABLE IF NOT EXISTS produto_tags (
     produto_id BIGINT NOT NULL,
     tag_id BIGINT NOT NULL,
     PRIMARY KEY (produto_id, tag_id),
