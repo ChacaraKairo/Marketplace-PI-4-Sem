@@ -1,6 +1,6 @@
-CREATE TABLE avaliacoes (
+CREATE TABLE IF NOT EXISTS avaliacoes (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    usuario_id BIGINT NOT NULL,
+    usuario_id VARCHAR(20) NOT NULL,
     produto_id BIGINT NOT NULL,
     nota INT NOT NULL CHECK (nota BETWEEN 1 AND 5),
     comentario TEXT NULL,
