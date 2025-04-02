@@ -1,4 +1,4 @@
-# 📦 Backend - Marketplace de Hardware
+# 📦 Backend - Sistema de Pedidos e Pagamentos
 
 ## 🛠️ Dependências Necessárias
 
@@ -20,6 +20,12 @@
 | **JWT**       | `npm i jsonwebtoken @types/jsonwebtoken` | Autenticação por token                 |
 | **Dotenv**    | `npm i dotenv`                           | Gerenciamento de variáveis de ambiente |
 | **Morgan**    | `npm i morgan @types/morgan`             | Log de requisições HTTP                |
+
+### 🔹 Ferramentas de Desenvolvimento
+
+| Pacote  | Comando de Instalação | Descrição                            |
+| ------- | --------------------- | ------------------------------------ |
+| **TSX** | `npm i tsx`           | Permite rodar TypeScript diretamente |
 
 ## 🗂️ Estrutura de Pastas
 
