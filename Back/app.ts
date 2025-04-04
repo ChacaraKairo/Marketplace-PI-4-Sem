@@ -1,66 +1,45 @@
 /**
  * @author Kairo Chácara
  * @version 1.0
- * @date 25/03/2025
- *
+ * @date 01/04/2025
+ * @description Arquivo de configuração da API do Marketplace de Hardware.
+ * Este arquivo configura os middlewares, conecta ao banco de dados usando Prisma,
+ * e define as rotas básicas da aplicação.
  */
+
+import express from 'express';
+import cors from 'cors';
+import morgan from 'morgan';
+import dotenv from 'dotenv';
+import { PrismaClient } from '@prisma/client';
+import router from './src/routes/Routes_Crud';
+
 /**
- * app.ts - Arquivo principal do backend
+ * Importações:
  *
- * Configura:
- * 1. Servidor Express
- * 2. Conexão com o banco de dados (Prisma)
- * 3. Middlewares globais (CORS, logging, JSON parsing)
- * 4. Rotas básicas (health check)
- * 5. Tratamento de erros centralizado
+ * Express: Framework para criar a API e gerenciar rotas.
+ * CORS: Middleware para permitir requisições de diferentes domínios.
+ * Morgan: Middleware para logar requisições HTTP.
+ * Dotenv: Carrega variáveis de ambiente do arquivo .env.
+ * PrismaClient: Facilita a comunicação com o banco de dados.
  */
 
-import express from 'express'; // Biblioteca para criar e configurar o servidor
-import { PrismaClient } from '@prisma/client'; // Cliente do Prisma para interagir com o banco de dados
-import cors from 'cors'; // Biblioteca para habilitar CORS(Cross-Origin Resource Sharing)
-import morgan from 'morgan'; // Biblioteca para logging de requisições HTTP
-import dotenv from 'dotenv'; // Biblioteca para carregar variáveis de ambiente
-
-/* ====================== */
-/* 1. CONFIGURAÇÃO INICIAL */
-/* ====================== */
-
-// Carrega variáveis de ambiente do arquivo .env
+// Carregando as variáveis de ambiente do arquivo .env
 dotenv.config();
 
-// Cria instância do Express
-const app = express();
+const app = express(); // Inicializa o aplicativo Express
+const prisma = new PrismaClient(); // Inicializa o PrismaClient para comunicação com o banco de dados
 
-// Inicializa o cliente do Prisma para acesso ao banco de dados
-const prisma = new PrismaClient();
-
-// Define a porta do servidor (usa a variável de ambiente ou padrão 3000)
+// Usando a variável de ambiente PORT do .env, caso não esteja definida, usa a porta 3000
 const PORT = process.env.PORT || 3000;
 
-/* ====================== */
-/* 2. MIDDLEWARES GLOBAIS */
-/* ====================== */
-
-// Habilita CORS para todas as rotas
-app.use(cors());
-
-// Configura logging de requisições HTTP no formato 'dev' (colorido)
-app.use(morgan('dev'));
-
-// Permite o parse automático de JSON no body das requisições
-app.use(express.json());
-
-/* ====================== */
-/* 3. CONEXÃO COM O BANCO */
-/* ====================== */
-
 /**
- * Testa a conexão com o banco de dados
- * @throws {Error} Se a conexão falhar
+ * Função para testar a conexão com o banco de dados usando Prisma.
+ * @throws {Error} Se a conexão com o banco de dados falhar, o processo será encerrado.
  */
 async function testDatabaseConnection() {
   try {
-    await prisma.$connect();
+    await prisma.$connect(); // Tenta se conectar ao banco de dados
     console.log(
       '✅ Conexão com o banco de dados estabelecida',
     );
@@ -69,72 +48,49 @@ async function testDatabaseConnection() {
       '❌ Falha ao conectar ao banco de dados:',
       error,
     );
-    process.exit(1); // Encerra o processo com erro
+    process.exit(1); // Encerra o processo se a conexão falhar
   }
 }
 
-/* ====================== */
-/* 4. ROTAS DA APLICAÇÃO */
-/* ====================== */
+// Middleware global para permitir requisições de outros domínios
+app.use(cors());
 
-// Rota de health check para monitoramento
+// Middleware para logar todas as requisições HTTP
+app.use(morgan('dev'));
+
+// Middleware para permitir que a aplicação entenda requisições com corpo JSON
+app.use(express.json());
+
+/**
+ * Rota de health check da API.
+ * @route GET /api/health
+ * @returns {Object} Status da API, mensagem e data/hora atual.
+ */
 app.get('/api/health', (req, res) => {
   res.status(200).json({
     status: 'healthy',
     message:
       'API do Marketplace de Hardware está operacional',
     timestamp: new Date().toISOString(),
-    database: 'connected', // Poderia verificar o status real da conexão
     version: '1.0.0',
   });
 });
 
-/* ====================== */
-/* 5. TRATAMENTO DE ERROS */
-/* ====================== */
-
-// Middleware para rotas não encontradas (404)
-app.use((req, res) => {
-  res.status(404).json({ error: 'Rota não encontrada' });
+/**
+ * Rota raiz da API.
+ * @route GET /
+ * @returns {string} Mensagem indicando que a API está funcionando.
+ */
+app.get('/', (req, res) => {
+  res.send('API está funcionando!');
 });
+// Conectar as rotas ao app
+app.use('/api', router); // Prefixando as rotas com '/api'
 
-// Middleware global de erros
-app.use(
-  (
-    err: Error,
-    req: express.Request,
-    res: express.Response,
-    next: express.NextFunction,
-  ) => {
-    console.error('Erro não tratado:', err.stack);
-    res.status(500).json({
-      error: 'Ocorreu um erro interno no servidor',
-      details:
-        process.env.NODE_ENV === 'development'
-          ? err.message
-          : undefined,
-    });
-  },
-);
-
-/* ====================== */
-/* 6. INICIALIZAÇÃO */
-/* ====================== */
-
-// Inicia o servidor
+// Iniciar o servidor na porta definida
 app.listen(PORT, async () => {
-  await testDatabaseConnection();
+  await testDatabaseConnection(); // Testa a conexão com o banco de dados ao iniciar o servidor
   console.log(
     `🚀 Servidor rodando em http://localhost:${PORT}`,
   );
 });
-
-// Fecha a conexão com o banco ao encerrar o servidor
-process.on('SIGTERM', async () => {
-  await prisma.$disconnect();
-  console.log('🔌 Conexão com o banco de dados encerrada');
-  process.exit(0);
-});
-
-// Exporta a instância do Express para testes
-export default app;

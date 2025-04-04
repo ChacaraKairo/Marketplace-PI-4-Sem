@@ -1,14 +1,189 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["typedSql"]
 }
 
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model avaliacoes {
+  id         Int       @id @default(autoincrement())
+  usuario_id String    @db.VarChar(20)
+  produto_id Int
+  nota       Int
+  comentario String?   @db.Text
+  data       DateTime? @default(now()) @db.Timestamp(0)
+  usuarios   usuarios  @relation(fields: [usuario_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "avaliacoes_ibfk_1")
+  produtos   produtos  @relation(fields: [produto_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "avaliacoes_ibfk_2")
+
+  @@index([produto_id], map: "produto_id")
+  @@index([usuario_id], map: "usuario_id")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model carrinho {
+  id             Int       @id @default(autoincrement())
+  usuario_id     String    @db.VarChar(20)
+  produto_id     Int
+  quantidade     Int
+  preco_unitario Decimal   @db.Decimal(10, 2)
+  adicionado_em  DateTime? @default(now()) @db.Timestamp(0)
+  atualizado_em  DateTime? @default(now()) @db.Timestamp(0)
+  usuarios       usuarios  @relation(fields: [usuario_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "carrinho_ibfk_1")
+  produtos       produtos  @relation(fields: [produto_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "carrinho_ibfk_2")
+
+  @@unique([usuario_id, produto_id], map: "usuario_id")
+  @@index([produto_id], map: "produto_id")
+}
+
+model categorias {
+  id        Int        @id @default(autoincrement())
+  nome      String     @unique(map: "nome") @db.VarChar(100)
+  descricao String?    @db.Text
+  produtos  produtos[]
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model cupons {
+  id         Int       @id @default(autoincrement())
+  codigo     String    @unique(map: "codigo") @db.VarChar(20)
+  desconto   Decimal   @db.Decimal(5, 2)
+  valido_ate DateTime  @db.Date
+  criado_em  DateTime? @default(now()) @db.Timestamp(0)
+  pedidos    pedidos[]
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model itens_pedidos {
+  id             Int      @id @default(autoincrement())
+  pedido_id      Int
+  produto_id     Int
+  quantidade     Int
+  preco_unitario Decimal  @db.Decimal(10, 2)
+  subtotal       Decimal  @db.Decimal(10, 2)
+  pedidos        pedidos  @relation(fields: [pedido_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "itens_pedidos_ibfk_1")
+  produtos       produtos @relation(fields: [produto_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "itens_pedidos_ibfk_2")
+
+  @@index([pedido_id], map: "pedido_id")
+  @@index([produto_id], map: "produto_id")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model pedidos {
+  id               Int                       @id @default(autoincrement())
+  usuario_id       String                    @db.VarChar(20)
+  data_pedido      DateTime?                 @default(now()) @db.Timestamp(0)
+  status           pedidos_status?           @default(pendente)
+  total            Decimal                   @db.Decimal(10, 2)
+  subtotal         Decimal                   @db.Decimal(10, 2)
+  desconto         Decimal?                  @default(0.00) @db.Decimal(10, 2)
+  cupom_id         Int?
+  metodo_pagamento pedidos_metodo_pagamento? @default(cartao)
+  itens_pedidos    itens_pedidos[]
+  usuarios         usuarios                  @relation(fields: [usuario_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "pedidos_ibfk_1")
+  cupons           cupons?                   @relation(fields: [cupom_id], references: [id], onUpdate: NoAction, map: "pedidos_ibfk_2")
+
+  @@index([cupom_id], map: "cupom_id")
+  @@index([usuario_id], map: "usuario_id")
+}
+
+model produto_tags {
+  produto_id Int
+  tag_id     Int
+  produtos   produtos @relation(fields: [produto_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "produto_tags_ibfk_1")
+  tags       tags     @relation(fields: [tag_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "produto_tags_ibfk_2")
+
+  @@id([produto_id, tag_id])
+  @@index([tag_id], map: "tag_id")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model produtos {
+  id               Int              @id @default(autoincrement())
+  vendedor_id      String           @db.VarChar(20)
+  nome             String           @db.VarChar(255)
+  descricao        String           @db.Text
+  preco            Decimal          @db.Decimal(10, 2)
+  quantidade       Int
+  categoria_id     Int?
+  data_cadastro    DateTime?        @default(now()) @db.Timestamp(0)
+  status           produtos_status? @default(ativo)
+  media_avaliacoes Decimal?         @default(0.00) @db.Decimal(3, 2)
+  imagem_url       String?          @db.Text
+  avaliacoes       avaliacoes[]
+  carrinho         carrinho[]
+  itens_pedidos    itens_pedidos[]
+  produto_tags     produto_tags[]
+  vendedores       vendedores       @relation(fields: [vendedor_id], references: [usuario_id], onDelete: Cascade, onUpdate: NoAction, map: "produtos_ibfk_1")
+  categorias       categorias?      @relation(fields: [categoria_id], references: [id], onUpdate: NoAction, map: "produtos_ibfk_2")
+
+  @@index([categoria_id], map: "categoria_id")
+  @@index([vendedor_id], map: "vendedor_id")
+}
+
+model tags {
+  id           Int            @id @default(autoincrement())
+  nome         String         @unique(map: "nome") @db.VarChar(50)
+  produto_tags produto_tags[]
+}
+
+model usuarios {
+  id              String        @id @db.VarChar(20)
+  nome            String        @db.VarChar(100)
+  email           String        @unique(map: "email") @db.VarChar(100)
+  senha           String        @db.VarChar(255)
+  telefone        String?       @db.VarChar(20)
+  cpf_cnpj        String?       @unique(map: "cpf_cnpj") @db.VarChar(20)
+  data_nascimento DateTime?     @db.Date
+  endereco        String?       @db.VarChar(255)
+  cidade          String?       @db.VarChar(100)
+  estado          String?       @db.VarChar(50)
+  pais            String?       @default("Brasil") @db.VarChar(50)
+  foto_perfil     String?       @db.VarChar(255)
+  tipo            usuarios_tipo
+  criado_em       DateTime?     @default(now()) @db.Timestamp(0)
+  avaliacoes      avaliacoes[]
+  carrinho        carrinho[]
+  pedidos         pedidos[]
+  vendedores      vendedores?
+}
+
+model vendedores {
+  usuario_id     String     @id @db.VarChar(20)
+  cnpj           String     @unique(map: "cnpj") @db.VarChar(20)
+  razao_social   String     @db.VarChar(150)
+  nome_fantasia  String?    @db.VarChar(150)
+  site           String?    @db.VarChar(255)
+  conta_bancaria String?    @db.VarChar(50)
+  criado_em      DateTime?  @default(now()) @db.Timestamp(0)
+  produtos       produtos[]
+  usuarios       usuarios   @relation(fields: [usuario_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "vendedores_ibfk_1")
+}
+
+enum pedidos_status {
+  pendente
+  pago
+  cancelado
+  processando
+}
+
+enum pedidos_metodo_pagamento {
+  cartao
+  boleto
+  pix
+  outro
+}
+
+enum produtos_status {
+  ativo
+  inativo
+}
+
+enum usuarios_tipo {
+  comprador
+  vendedor
 }
