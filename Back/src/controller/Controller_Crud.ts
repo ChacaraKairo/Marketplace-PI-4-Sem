@@ -2,6 +2,24 @@ import { Request, Response } from 'express';
 import ServiceCrud from '../service/Service_Crud'; // Importe a classe ServiceCrud
 
 class ControllerCrud {
+  /**Rota para buscar os nomes das tabelas  */
+  static async listar_entidades(
+    req: Request,
+    res: Response,
+  ): Promise<void> {
+    try {
+      const result = await ServiceCrud.listar_entidades();
+      res.status(200).json(result); // Retorna os registros encontrados
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        res.status(500).json({ error: error.message });
+      } else {
+        res
+          .status(500)
+          .json({ error: 'Erro desconhecido' });
+      }
+    }
+  }
   /**
    * Rota para buscar todos os registros de uma entidade
    */

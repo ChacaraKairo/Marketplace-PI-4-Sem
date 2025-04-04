@@ -1,4 +1,5 @@
 import { Prisma, PrismaClient } from '@prisma/client';
+import { getPostTables } from '@prisma/client/sql';
 
 class ServiceCrud {
   private prisma: PrismaClient;
@@ -6,28 +7,30 @@ class ServiceCrud {
   constructor() {
     this.prisma = new PrismaClient();
   }
+  static async bloqueia_user(entidade: any) {
+    if (entidade == 'usuario') {
+      return 'Operação não pode ser realizada por motivos de segurança.';
+    } else {
+      return true;
+    }
+  }
 
+  static async listar_entidades(): Promise<any[]> {
+    const prisma = new PrismaClient();
+    return await prisma.$queryRawTyped(getPostTables());
+  }
   /**
-   * Verifica se a entidade existe no banco de dados.
-   * @param {string} entity Nome da entidade (tabela).
-   * @returns {Promise<boolean>} Retorna verdadeiro se a entidade existir, falso caso contrário.
+   * Verifica se uma entidade (tabela) existe no banco de dados.
+   * @param {string} entity Nome da entidade a ser verificada.
+   * @returns {Promise<boolean>} True se a entidade existir, false caso contrário.
    */
-  private static async checkIfEntityExists(
+  static async checkIfEntityExists(
     entity: string,
   ): Promise<boolean> {
-    try {
-      const prisma = new PrismaClient();
-      const result = await (prisma as any)[
-        entity
-      ].findFirst();
-      return result !== null;
-    } catch (error) {
-      console.error(
-        `Erro ao verificar se a entidade ${entity} existe: `,
-        error,
-      );
-      return false;
-    }
+    const tables = await this.listar_entidades();
+    return tables.some(
+      (table) => table.TABLE_NAME === entity,
+    );
   }
 
   /**
@@ -73,7 +76,10 @@ class ServiceCrud {
     value: any,
   ): Promise<any[]> {
     try {
-      if (!(await this.checkIfEntityExists(entity))) {
+      if (
+        !(await this.checkIfEntityExists(entity)) &&
+        !(await this.bloqueia_user(entity))
+      ) {
         throw new Error(
           `Entidade ${entity} não existe no banco de dados.`,
         );
@@ -100,7 +106,10 @@ class ServiceCrud {
    */
   static async findAll(entity: string): Promise<any[]> {
     try {
-      if (!(await this.checkIfEntityExists(entity))) {
+      if (
+        !(await this.checkIfEntityExists(entity)) &&
+        !(await this.bloqueia_user(entity))
+      ) {
         throw new Error(
           `Entidade ${entity} não existe no banco de dados.`,
         );
@@ -191,7 +200,10 @@ class ServiceCrud {
     id: string,
   ): Promise<any> {
     try {
-      if (!(await this.checkIfEntityExists(entity))) {
+      if (
+        !(await this.checkIfEntityExists(entity)) &&
+        !(await this.bloqueia_user(entity))
+      ) {
         throw new Error(
           `Entidade ${entity} não existe no banco de dados.`,
         );

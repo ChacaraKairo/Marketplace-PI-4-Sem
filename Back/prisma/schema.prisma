@@ -1,17 +1,18 @@
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["typedSql"]
 }
 
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
-/*npx prisma db pull*/
+
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 model avaliacoes {
-  id         BigInt    @id @default(autoincrement())
+  id         Int       @id @default(autoincrement())
   usuario_id String    @db.VarChar(20)
-  produto_id BigInt
+  produto_id Int
   nota       Int
   comentario String?   @db.Text
   data       DateTime? @default(now()) @db.Timestamp(0)
@@ -24,9 +25,9 @@ model avaliacoes {
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 model carrinho {
-  id             BigInt    @id @default(autoincrement())
+  id             Int       @id @default(autoincrement())
   usuario_id     String    @db.VarChar(20)
-  produto_id     BigInt
+  produto_id     Int
   quantidade     Int
   preco_unitario Decimal   @db.Decimal(10, 2)
   adicionado_em  DateTime? @default(now()) @db.Timestamp(0)
@@ -39,7 +40,7 @@ model carrinho {
 }
 
 model categorias {
-  id        BigInt     @id @default(autoincrement())
+  id        Int        @id @default(autoincrement())
   nome      String     @unique(map: "nome") @db.VarChar(100)
   descricao String?    @db.Text
   produtos  produtos[]
@@ -57,9 +58,9 @@ model cupons {
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 model itens_pedidos {
-  id             BigInt   @id @default(autoincrement())
-  pedido_id      BigInt
-  produto_id     BigInt
+  id             Int      @id @default(autoincrement())
+  pedido_id      Int
+  produto_id     Int
   quantidade     Int
   preco_unitario Decimal  @db.Decimal(10, 2)
   subtotal       Decimal  @db.Decimal(10, 2)
@@ -73,7 +74,7 @@ model itens_pedidos {
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model pedidos {
-  id               BigInt                    @id @default(autoincrement())
+  id               Int                       @id @default(autoincrement())
   usuario_id       String                    @db.VarChar(20)
   data_pedido      DateTime?                 @default(now()) @db.Timestamp(0)
   status           pedidos_status?           @default(pendente)
@@ -91,8 +92,8 @@ model pedidos {
 }
 
 model produto_tags {
-  produto_id BigInt
-  tag_id     BigInt
+  produto_id Int
+  tag_id     Int
   produtos   produtos @relation(fields: [produto_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "produto_tags_ibfk_1")
   tags       tags     @relation(fields: [tag_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "produto_tags_ibfk_2")
 
@@ -102,13 +103,13 @@ model produto_tags {
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 model produtos {
-  id               BigInt           @id @default(autoincrement())
+  id               Int              @id @default(autoincrement())
   vendedor_id      String           @db.VarChar(20)
   nome             String           @db.VarChar(255)
   descricao        String           @db.Text
   preco            Decimal          @db.Decimal(10, 2)
   quantidade       Int
-  categoria_id     BigInt?
+  categoria_id     Int?
   data_cadastro    DateTime?        @default(now()) @db.Timestamp(0)
   status           produtos_status? @default(ativo)
   media_avaliacoes Decimal?         @default(0.00) @db.Decimal(3, 2)
@@ -125,7 +126,7 @@ model produtos {
 }
 
 model tags {
-  id           BigInt         @id @default(autoincrement())
+  id           Int            @id @default(autoincrement())
   nome         String         @unique(map: "nome") @db.VarChar(50)
   produto_tags produto_tags[]
 }

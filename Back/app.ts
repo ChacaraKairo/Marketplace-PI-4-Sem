@@ -13,6 +13,7 @@ import morgan from 'morgan';
 import dotenv from 'dotenv';
 import { PrismaClient } from '@prisma/client';
 import router from './src/routes/Routes_Crud';
+
 /**
  * Importações:
  *
