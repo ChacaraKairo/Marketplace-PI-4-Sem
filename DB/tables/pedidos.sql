@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS pedidos (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     usuario_id VARCHAR(20) NOT NULL,
     data_pedido TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     `status` ENUM('pendente', 'pago', 'cancelado', 'processando') DEFAULT 'pendente',

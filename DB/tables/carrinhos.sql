@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS carrinho (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     usuario_id VARCHAR(20) NOT NULL,
-    produto_id BIGINT NOT NULL,
+    produto_id INT NOT NULL,
     quantidade INT NOT NULL CHECK (quantidade > 0),
     preco_unitario DECIMAL(10,2) NOT NULL CHECK (preco_unitario >= 0),
     adicionado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
