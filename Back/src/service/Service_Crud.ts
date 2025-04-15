@@ -176,6 +176,51 @@ class ServiceCrud {
       throw error;
     }
   }
+  /**
+   * Cria múltiplos registros em uma entidade do banco de dados.
+   *
+   * @param entity Nome da entidade/tabela no banco (deve corresponder ao nome do model no Prisma).
+   * @param data Array de objetos contendo os dados a serem inseridos.
+   * @param skipDuplicates (opcional) Ignora registros duplicados com base nas constraints únicas (default: false).
+   * @returns Um objeto com a contagem de registros inseridos.
+   *
+   * @throws Erro se a entidade não existir ou a inserção falhar.
+   */
+  static async createMany(
+    entity: string,
+    data: object[],
+    skipDuplicates: boolean = false,
+  ): Promise<{ count: number }> {
+    try {
+      const exists = await this.checkIfEntityExists(entity);
+      if (!exists) {
+        throw new Error(
+          `Entidade "${entity}" não existe no banco de dados.`,
+        );
+      }
+
+      const prisma = new PrismaClient();
+      const result = await (prisma as any)[
+        entity
+      ].createMany({
+        data,
+        skipDuplicates,
+      });
+
+      console.log(
+        `✅ ${result.count} registros criados em "${entity}".`,
+      );
+      return result;
+    } catch (error) {
+      console.error(
+        `❌ Erro ao criar registros em "${entity}":`,
+        error,
+      );
+      throw new Error(
+        `Erro ao criar múltiplos registros em "${entity}".`,
+      );
+    }
+  }
 
   /**
    * Atualiza um registro existente.
