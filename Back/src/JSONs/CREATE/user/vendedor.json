@@ -1,0 +1,23 @@
+{
+  "usuarios": {
+    "nome": "Tipo: string, exemplo: 'Lucas Silva'",
+    "email": "Tipo: string, deve ser um email válido, exemplo: 'lucas@email.com'",
+    "senha": "Tipo: string, senha criptografada, exemplo: '$2b$10$4DGy1/E2Pv9XYDLUbryWSuo1dbxVR8UfSog2qWEQ6b02U4vESXcJi'",
+    "telefone": "Tipo: string, exemplo: '11955556666', pode ter até 15 caracteres",
+    "cpf_cnpj": "Tipo: string, deve ser um CPF (11 dígitos) ou CNPJ (14 dígitos), exemplo: '54321678901' ou '12343213000100'",
+    "data_nascimento": "Tipo: string, formato ISO 8601 com hora, exemplo: '1983-12-22T10:00:00.000Z'",
+    "endereco": "Tipo: string, exemplo: 'Avenida Brasil, 123'",
+    "cidade": "Tipo: string, exemplo: 'Fortaleza'",
+    "estado": "Tipo: string, exemplo: 'CE'",
+    "pais": "Brasil, Tipo: string, valor padrão 'Brasil', pode ser alterado conforme necessário",
+    "foto_perfil": "Tipo: string, URL da foto do perfil, exemplo: 'https://picsum.photos/200'",
+    "tipo": "Tipo: string, valores possíveis: 'comprador' ou 'vendedor'"
+  },
+  "vendedores": {
+    "cnpj": "Tipo: string, deve ser um CNPJ válido (14 dígitos), exemplo: '12343213000100'",
+    "razao_social": "Tipo: string, exemplo: 'Silva Comércio Ltda'",
+    "nome_fantasia": "Tipo: string, exemplo: 'Silva Comércio'",
+    "site": "Tipo: string, deve ser um URL válido, exemplo: 'https://silvacomercio.com.br'",
+    "conta_bancaria": "Tipo: string, exemplo: '0006-123432-1'"
+  }
+}

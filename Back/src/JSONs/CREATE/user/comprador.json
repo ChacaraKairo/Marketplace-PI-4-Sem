@@ -1,0 +1,15 @@
+{
+  "nome": "Tipo: string, exemplo: 'Alice Martins'",
+  "email": "Tipo: string, deve ser um email válido, exemplo: 'alice@email.com'",
+  "senha": "Tipo: string, senha criptografada, exemplo: '$2b$10$4DGy1/E2Pv9XYDLUbryWSuo1dbxVR8UfSog2qWEQ6b02U4vESXcJi'",
+  "telefone": "Tipo: string, exemplo: '11990000001', pode ter até 15 caracteres",
+  "cpf_cnpj": "Tipo: string, deve ser um CPF (11 dígitos) ou CNPJ (14 dígitos), exemplo: '11111111111' ou '11111111000199'",
+  "data_nascimento": "Tipo: string, formato ISO 8601 com hora, exemplo: '2023-05-01T10:00:00.000Z'",
+  "endereco": "Tipo: string, exemplo: 'Rua das Flores, 45'",
+  "cidade": "Tipo: string, exemplo: 'São Paulo'",
+  "estado": "Tipo: string, exemplo: 'SP'",
+  "pais": "Brasil, Tipo: string, valor padrão 'Brasil', pode ser alterado conforme necessário",
+  "foto_perfil": "Tipo: string, URL da foto do perfil, exemplo: 'https://picsum.photos/200?1'",
+  "tipo": "Tipo: string, valores possíveis: 'comprador' ou 'vendedor'",
+  "id": "Tipo: string, deve ser um identificador único gerado (pode usar algo como 'nanoid(20)')"
+}
