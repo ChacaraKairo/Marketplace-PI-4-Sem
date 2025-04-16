@@ -10,39 +10,64 @@ import ContollerCrud from '../controller/Controller_Crud';
 import ControllerUser from '../controller/Controller_User';
 import ControllerAuth from '../controller/Controller_Auth';
 import PedidoController from '../controller/Controller_Pedido';
+import {
+  authMiddleware,
+  compradorMiddleware,
+  vendedorMiddleware,
+} from '../middleware/mid_authGeral';
 
 const router = Router();
 
 /**
  * Rota para listar todas as entidades disponíveis no sistema.
  */
-router.get('/entities', ContollerCrud.listar_entidades);
+router.get(
+  '/entities',
+  authMiddleware,
+  ContollerCrud.listar_entidades,
+);
 
 /**
  * Rota para buscar todos os registros de uma entidade.
  * @param entity Nome da entidade.
  */
-router.get('/entities/:entity', ContollerCrud.findAll);
+router.get(
+  '/entities/:entity',
+  authMiddleware,
+  ContollerCrud.findAll,
+);
 
 /**
  * Rota para buscar um registro específico por ID.
  * @param entity Nome da entidade.
  * @param id Identificador do registro.
  */
-router.get('/entities/:entity/:id', ContollerCrud.findById);
+router.get(
+  '/entities/:entity/:id',
+  authMiddleware,
+  ContollerCrud.findById,
+);
 
 /**
  * Rota para criar um novo registro em uma entidade.
  * @param entity Nome da entidade.
  */
-router.post('/entities/:entity', ContollerCrud.create);
+router.post(
+  '/entities/:entity',
+  authMiddleware,
+  ContollerCrud.create,
+);
 
 /**
  * Rota para atualizar um registro existente de uma entidade.
  * @param entity Nome da entidade.
  * @param id Identificador do registro.
  */
-router.put('/entities/:entity/:id', ContollerCrud.update);
+router.put(
+  '/entities/:entity/:id',
+  authMiddleware,
+  ContollerCrud.update,
+);
 
 /**
  * Rota para deletar um registro de uma entidade.
@@ -51,6 +76,7 @@ router.put('/entities/:entity/:id', ContollerCrud.update);
  */
 router.delete(
   '/entities/:entity/:id',
+  authMiddleware,
   ContollerCrud.delete,
 );
 
@@ -62,6 +88,7 @@ router.delete(
  */
 router.get(
   '/entities/:entity/findByField',
+  authMiddleware,
   ContollerCrud.findByField,
 );
 
@@ -82,24 +109,28 @@ router.post(
 );
 
 /**
- * Rota para criar um novo pedido de compra.
+ * Rota para criar um novo pedido de compra (restrita a compradores).
  */
 router.post(
   '/compra/pedido',
+  authMiddleware,
+  compradorMiddleware,
   PedidoController.criar_pedido,
 );
 
 /**
- * Rota para gerar a nota fiscal de um pedido de um vendedor.
+ * Rota para gerar a nota fiscal de um pedido (restrita a vendedores).
  * @param id ID do pedido.
  */
 router.get(
   '/gestao/vendedor/pedidos/:id/nota-fiscal',
+  authMiddleware,
+  vendedorMiddleware,
   PedidoController.pedido_para_nota_fiscal,
 );
 
 /**
- * Rota de login do sistema, responsável por autenticar o usuário e retornar o token JWT.
+ * Rota de login do sistema.
  */
 router.post('/auth/login', ControllerAuth.login);
 
