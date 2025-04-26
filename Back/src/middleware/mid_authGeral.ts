@@ -15,7 +15,7 @@ export const authMiddleware: RequestHandler = (
     res
       .status(401)
       .json({ error: 'Token de autorização ausente' });
-    return; // <--- finaliza a execução
+    return;
   }
 
   const token = authHeader.split(' ')[1];
