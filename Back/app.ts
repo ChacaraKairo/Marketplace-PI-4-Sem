@@ -8,7 +8,7 @@
 import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
-import router from './src/routes/Routes_Crud';
+import router from './src/routes/index';
 
 const app = express(); // Inicializa o aplicativo Express
 
