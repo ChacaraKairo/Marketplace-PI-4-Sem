@@ -109,8 +109,20 @@ npm start
 
 ```mermaid
 erDiagram
-  USUARIOS ||--o{ PEDIDOS : tem
-  PEDIDOS ||--|{ ITENS_PEDIDOS : contém
-  PRODUTOS ||--o{ ITENS_PEDIDOS : incluído-em
-  PEDIDOS }|--|| CUPONS : aplica
+    USUARIOS ||--o{ PEDIDOS : faz
+    USUARIOS ||--o{ AVALIACOES : faz
+    USUARIOS ||--o{ CARRINHO : tem
+    USUARIOS ||--o{ VENDEDORES : e
+
+    VENDEDORES ||--o{ PRODUTOS : vende
+
+    PRODUTOS ||--o{ AVALIACOES : recebe
+    PRODUTOS ||--o{ ITENS_PEDIDOS : incluido_em
+    PRODUTOS ||--o{ CARRINHO : esta_em
+    PRODUTOS }|--|| CATEGORIAS : pertence_a
+    PRODUTOS ||--o{ PRODUTO_TAGS : tem
+    TAGS ||--o{ PRODUTO_TAGS : esta_em
+
+    PEDIDOS ||--|{ ITENS_PEDIDOS : contem
+    PEDIDOS }|--|| CUPONS : usa
 ```
