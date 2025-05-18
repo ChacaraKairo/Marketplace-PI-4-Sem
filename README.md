@@ -108,9 +108,24 @@ npm start
 ### Diagrama simplificado:
 
 ```mermaid
+```mermaid
 erDiagram
-  USUARIOS ||--o{ PEDIDOS : tem
-  PEDIDOS ||--|{ ITENS_PEDIDOS : contém
-  PRODUTOS ||--o{ ITENS_PEDIDOS : incluído-em
-  PEDIDOS }|--|| CUPONS : aplica
+    USUARIOS ||--o{ PEDIDOS : faz
+    USUARIOS ||--o{ AVALIACOES : faz
+    USUARIOS ||--o{ CARRINHO : tem
+    USUARIOS ||--o{ VENDEDORES : é
+
+    VENDEDORES ||--o{ PRODUTOS : vende
+
+    PRODUTOS ||--o{ AVALIACOES : recebe
+    PRODUTOS ||--o{ ITENS_PEDIDOS : incluído_em
+    PRODUTOS ||--o{ CARRINHO : está_em
+    PRODUTOS }|--|| CATEGORIAS : pertence_a
+    PRODUTOS ||--o{ PRODUTO_TAGS : tem
+    TAGS ||--o{ PRODUTO_TAGS : está_em
+
+    PEDIDOS ||--|{ ITENS_PEDIDOS : contém
+    PEDIDOS }|--|| CUPONS : usa
+```
+
 ```
