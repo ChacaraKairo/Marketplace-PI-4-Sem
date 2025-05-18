@@ -1,19 +1,24 @@
 /**
- * @description Arquivo responsável por iniciar o servidor e testar conexão com o banco de dados.
+ * @author Kairo Chácara
+ * @version 1.0
+ * @date 18/05/2025
+ * @description Arquivo responsável por iniciar o servidor Express,
+ *              carregar variáveis de ambiente e testar a conexão com o banco de dados Prisma.
  */
 
 import dotenv from 'dotenv';
 import { PrismaClient } from '@prisma/client';
 import app from './app';
 
-// Carrega variáveis de ambiente
+// Carrega as variáveis de ambiente do arquivo .env
 dotenv.config();
 
 const prisma = new PrismaClient();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT;
 
 /**
- * Função para testar a conexão com o banco de dados usando Prisma.
+ * Testa a conexão com o banco de dados utilizando Prisma Client.
+ * Em caso de falha, encerra a aplicação com código de erro 1.
  */
 async function testDatabaseConnection() {
   try {
@@ -30,7 +35,9 @@ async function testDatabaseConnection() {
   }
 }
 
-// Inicia o servidor e testa a conexão
+/**
+ * Inicia o servidor na porta configurada e executa o teste de conexão com o banco.
+ */
 app.listen(PORT, async () => {
   await testDatabaseConnection();
   console.log(
