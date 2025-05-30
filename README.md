@@ -6,7 +6,7 @@
 - **Luis** - Front-end/UI
 - **Leonardo** - Full-stack
 - **Pietro** - DevOps/QA
-- **Wendel** - Product Owner
+- **Wendel** - Product Owner 
 
 ## 🚀 Visão do Projeto
 
