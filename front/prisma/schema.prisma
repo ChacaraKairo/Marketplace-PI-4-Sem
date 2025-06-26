@@ -1,0 +1,127 @@
+datasource db {
+  provider = "mysql"
+  url = env("DATABASE_URL")
+}
+ 
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Account {
+  id                       String  @id @default(cuid())
+  userId                   String  @unique
+  type                     String
+  provider                 String
+  providerAccountId        String
+  refresh_token            String? @db.Text
+  access_token             String? @db.Text
+  expires_at               Int?
+  token_type               String?
+  scope                    String?
+  id_token                 String? @db.Text
+  session_state            String?
+  refresh_token_expires_in Int?
+  user                     User?   @relation(fields: [userId], references: [id])
+ 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+ 
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model User {
+  id            String          @id @default(cuid())
+  name          String?
+  username      String?         @unique
+  email         String?         @unique
+  emailVerified DateTime?
+  image         String?
+  hashedPassword String?
+  accounts      Account[]
+  orders        Order[]
+  reviews       Review[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  role Role @default(USER)
+  
+}
+
+enum Role{
+    USER
+    ADMIN
+}
+
+model Product{
+  id              String        @id @default(cuid())
+  name String
+  description String
+  price Float
+  brand String
+  category String
+  inStock Boolean
+  color         String
+  colorCode     String
+  imageUrl      String
+  reviews Review[]
+}
+
+model Review{
+  id              String        @id @default(cuid())
+  userId String 
+  productId String
+  rating Int
+  comment String
+  createdDate      DateTime      @default(now())
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  user            User?         @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Order {
+  id              String        @id @default(cuid())
+  userId          String
+  amount          Float
+  currency        String
+  status          String
+  deliveryStatus  String?
+  createDate      DateTime      @default(now())
+  paymentIntentId String        @unique
+  address         Address?
+
+  user            User?         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  products        CartProduct[] // relacionamento com os produtos
+}
+
+model CartProduct {
+  id            String   @id @default(cuid())
+  order         Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId       String
+
+  name          String
+  description   String
+  category      String
+  brand         String
+  color         String
+  colorCode     String
+  imageUrl      String
+  quantity      Int
+  price         Float
+}
+
+model Address {
+  id        String @id @default(cuid())
+  city      String
+  country   String
+  line1     String
+  line2     String?
+  postalCode String
+  state     String
+
+  order     Order? @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId   String @unique
+}
+
+
+
+ 
